@@ -4,62 +4,96 @@ import time
 import requests
 import sys  
 import re
-# reload(sys)  
-# sys.setdefaultencoding('utf8')   
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-    "Accept-Language": "zh-CN,zh;q=0.9",
-    "Accept-Encoding": "gzip, deflate",
-}
-# url = 'https://dijiubook.net/29_29946/11606834.html'
-# r=requests.get(url,headers)
-# r.encoding='gbk'
-# t=r.text
-# # print(t)
-# f1 = open('test.txt','w')
-# # f1.write(t)
-# NextUrl = re.findall("章节目录</a>.*<a href=\"(.*?)\">下一章</a>",t)
-# print(NextUrl)
-# NovelTitle = re.findall("<h1>(.*?)</h1>",t)
-# print(NovelTitle)
-# f1.write(NovelTitle[0])
-# Content = re.findall('</br>([\s\S]*)</br>',t)
-# # print(Content)
-# Content[0] = Content[0].replace("\\t", "")
-# Content[0] = Content[0].replace("&nbsp;", "")
-# Content[0] = Content[0].replace("&nbsp", "")
-# Content[0] = Content[0].replace("<br />", "")
-# Content[0] = Content[0].replace("\\r\\n", "\\n")
-# # print(Content[0])
-# f1.write(Content[0])
+import yaml
 
-BaseUrl = 'https://dijiubook.net'
-ProUrl = '/29_29946/11606834.html'
-
-while 1:
-    try:
-        f1 = open('DZJH.txt','a+')
-        url = BaseUrl + ProUrl
-        r=requests.get(url,headers)
-        r.encoding='gbk'
-        t=r.text
-        NextUrl = re.findall("章节目录</a>.*<a href=\"(.*?)\">下一章</a>",t)
-        print(NextUrl)
-        NovelTitle = re.findall("<h1>(.*?)</h1>",t)
-        print(NovelTitle)
-        f1.write(NovelTitle[0])
-        Content = re.findall('</br>([\s\S]*)</br>',t)
-        Content[0] = Content[0].replace("\\t", "")
-        Content[0] = Content[0].replace("&nbsp;", "")
-        Content[0] = Content[0].replace("&nbsp", "")
-        Content[0] = Content[0].replace("<br />", "")
-        Content[0] = Content[0].replace("\\r\\n", "\\n")
-        f1.write(Content[0])
+class NovelDownload():
+    #根据配置文件生成self属性
+    def __init__(self):
+        self.config = self.getconfig()
+        for i in self.config.items() :
+            setattr(self, i[0], i[1])
+        
+        pass
+    #获取配置文件内容，返回dict
+    def getconfig(self,configfile='./config.yml'):
+        with open(configfile, 'r', encoding='utf-8') as f:
+            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+        return config
+        # print(result, type(result))
+    #获取html
+    def get(self,*args):
+        url = self.BaseUrl + self.ExUrl
+        r = requests.get(url,self.headers)
+        r.encoding = self.encoding
+        t = r.text
+        f1 = open('get.txt','w')
+        f1.write(t)
         f1.close()
-        ProUrl = NextUrl[0]
-        time.sleep(0.1)
-    except Exception as e:
-        print(e)
-        filename = input("继续？：")
-    pass
+        print("get html success ! save to text.txt")
+        pass
+    #处理文本核心代码
+    def core(self,BaseUrl,Exurl):
+        # print(BaseUrl,Exurl)
+        # print('-'*20)
+        url = BaseUrl + Exurl
+        r = requests.get(url,self.headers)
+        r.encoding = self.encoding
+        t = r.text
+        NextUrl = re.findall(self.Pattern['PatternNextUrl'],t)[0]
+        NovelTitle = re.findall(self.Pattern['PatternTitle'],t)[0]
+        Content = re.findall(self.Pattern['PatternContent'],t)[0]
+        #########################
+        Content = Content.replace("\\t", "")
+        Content = Content.replace("&nbsp;", "")
+        Content = Content.replace("&nbsp", "")
+        Content = Content.replace("<br />", "")
+        Content = Content.replace("\\r\\n", "\\n")
+        #########################
+        return NextUrl,NovelTitle,Content
+
+    #测试生成效果
+    def test(self,*args):
+        t = self.core(self.BaseUrl,self.ExUrl)
+        NextUrl = t[0]
+        NovelTitle = t[1]
+        Content = t[2]
+        f1 = open('test.txt','w')
+        f1.write(NextUrl)
+        f1.write(NovelTitle)
+        f1.write(Content)
+        f1.close()
+        print("get test success ! save to test.txt")
+        pass
+
+    def help(self,*args):
+        print('get:        获取目标地址的html文件。')
+        print('test:       生成示例文档。')
+        print('download:   下载目标地址内容。')
+        print('setconfig:  设置临时配置参数。')
+        pass
+
+    def setconfig(self,**kwargs):
+        
+        pass
+
+    #循环下载
+    def download(self,*args):
+        print('正在下载...')
+        ex = self.ExUrl
+        while 1 :
+            t = self.core(self.BaseUrl,ex)
+            NovelTitle = t[1]
+            Content = t[2]
+            f1 = open(self.SaveFile,'a+')
+            f1.write(NovelTitle)
+            f1.write(Content)
+            f1.close()
+            print(NovelTitle)
+            ex = t[0]
+
+if __name__=="__main__":
+    a = NovelDownload()
+    while 1 :
+        i = input("请输入命令：").split(" ")
+        print(i)
+        getattr(a, i[0]) (i[1:])
