@@ -42,6 +42,7 @@ class NovelDownload():
         NextUrl = re.findall(self.Pattern['PatternNextUrl'],t)[0]
         NovelTitle = re.findall(self.Pattern['PatternTitle'],t)[0]
         Content = re.findall(self.Pattern['PatternContent'],t)[0]
+        #该部分根据自己需要进行修改调整
         #########################
         Content = Content.replace("\\t", "")
         Content = Content.replace("&nbsp;", "")
@@ -94,6 +95,12 @@ class NovelDownload():
 if __name__=="__main__":
     a = NovelDownload()
     while 1 :
-        i = input("请输入命令：").split(" ")
-        print(i)
-        getattr(a, i[0]) (i[1:])
+        try:
+            i = input("请输入命令：").split(" ")
+            print(i)
+            getattr(a, i[0]) (i[1:])
+        except Exception as e:
+            print(e)
+            print("执行失败，请检查后重新输入！")
+
+        
