@@ -42,6 +42,7 @@ class NovelDownload():
         NextUrl = re.findall(self.Pattern['PatternNextUrl'],t)[0]
         NovelTitle = re.findall(self.Pattern['PatternTitle'],t)[0]
         Content = re.findall(self.Pattern['PatternContent'],t)[0]
+        #该部分根据咨询需要进行添加修改
         #########################
         Content = Content.replace("\\t", "")
         Content = Content.replace("&nbsp;", "")
