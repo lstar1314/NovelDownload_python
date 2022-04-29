@@ -1,14 +1,15 @@
-SaveFile: novel.txt
-BaseUrl: https://dijiubook.net
-ExUrl: /29_29946/11606834.html
-Pattern:
-  PatternNextUrl: "章节目录</a>.*<a href=\"(.*?)\">下一章</a>"
-  PatternTitle: "<h1>(.*?)</h1>"
-  PatternContent: '</br>([\s\S]*)</br>'
+﻿SaveFile: nov.txt
+BaseUrl: https://www.866zw.org
+ExUrl: /80/80726/53466452.html
+PatternNextUrl: "<a href=\"(.*?)\">下一章</a>"
+PatternTitle: "<h3>(.*?)</h3>"
+PatternContent: '<div class="novelcontent">([\s\S]*?)</div>'
 encoding: gbk
-
+ctreplace: []
 headers:
   User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
   Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
   Accept-Language: "zh-CN,zh;q=0.9"
   Accept-Encoding: "gzip, deflate"  
+
+
