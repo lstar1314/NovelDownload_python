@@ -30,6 +30,7 @@ class NovelDownload():
         
         url = self.BaseUrl + self.ExUrl
         r = requests.get(url,self.headers,verify=False)
+        # r = requests.get(url)
         r.encoding = self.encoding
         t = r.text
         f1 = open('get.txt','w')
@@ -39,8 +40,10 @@ class NovelDownload():
         pass
     #处理文本核心代码
     def _core(self,BaseUrl,Exurl):
+        print(Exurl)
         url = BaseUrl + Exurl
         r = requests.get(url,self.headers,verify=False)
+        # r = requests.get(url)
         r.encoding = self.encoding
         t = r.text
         NextUrl = re.findall(self.PatternNextUrl,t)[0]
@@ -129,7 +132,7 @@ class NovelDownload():
             f1.write("\n")
             f1.close()
             print(NovelTitle)
-            time.sleep(1)
+            time.sleep(0.1)
             ex = t[0]
     #退出
     def exit(self,*args):
@@ -141,7 +144,8 @@ if __name__=="__main__":
     while 1 :
         try:
             i = input("请输入命令：").split(" ")
-            print(i)
+            # print(i)
+            a.getconfig('./config.yml')
             getattr(a, i[0]) (*i[1:])
             print('\n')
         except Exception as e:
